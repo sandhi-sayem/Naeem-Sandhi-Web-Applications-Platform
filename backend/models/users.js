@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Joi = require("joi");
 
 const userSchema = new mongoose.Schema(
   {
@@ -14,17 +15,16 @@ const userSchema = new mongoose.Schema(
       minlength: 2,
       maxlength: 100,
     },
-    email: {
+    fullName: {
       type: String,
-      required: [true, "Please enter a valid email"],
-      minlength: 7,
-      maxlength: 100,
+      required: [true, "Please enter the full name of the user"],
+      minlength: 4,
+      maxlength: 200,
     },
-    password: {
-      type: String,
-      required: [true, "Please enter a valid password"],
-      minlength: 6,
-      maxlength: 25,
+    credential: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Credential",
+      required: [true, "Please provide an credential for the user"],
     },
   },
   { timestamps: true }
@@ -32,4 +32,17 @@ const userSchema = new mongoose.Schema(
 
 const User = mongoose.model("User", userSchema);
 
-module.exports = User;
+const validateUserSchema = (body) => {
+  const schema = Joi.object({
+    firstName: Joi.string().min(2).max(100).required(),
+    lastName: Joi.string().min(2).max(100).required(),
+    credential: Joi.string()
+      .required()
+      .regex(/^[0-9a-fA-F]{24}$/, "credentialId"),
+    fullName: Joi.string().min(4).max(200).required(),
+  });
+
+  return schema.validate(body);
+};
+
+module.exports = { User, validateUserSchema };

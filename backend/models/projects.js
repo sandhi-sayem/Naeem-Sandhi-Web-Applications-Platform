@@ -45,7 +45,7 @@ const projectSchema = new mongoose.Schema(
           user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: [true, "Please provide an user id for the review"],
+            required: [true, "Please provide an user id for the rating"],
           },
           star: {
             type: Number,
